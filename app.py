@@ -6,8 +6,6 @@ app = Flask(__name__)
 # ─── Global game state ────────────────────────────────────────────────────────
 game = {}
 
-
-# ─── Helper: get all adjacent cells ──────────────────────────────────────────
 def get_neighbors(row, col, rows, cols):
     neighbors = []
     if row > 0:
