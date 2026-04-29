@@ -33,63 +33,40 @@ def compute_percept(row, col):
             stench = True
 
     return breeze, stench
-
-
-# ─── TELL: add facts to KB ────────────────────────────────────────────────────
 def tell(cell, breeze, stench):
     kb = game["kb"]
     row, col = cell
-
-    # Mark cell as visited and safe
     kb["visited"].add(cell)
     kb["safe"].add(cell)
-
-    # Store percept facts
     if breeze:
         kb["breeze_cells"].add(cell)
     if stench:
         kb["stench_cells"].add(cell)
-
-    # If no breeze → all neighbors are pit-free
     if not breeze:
         rows = game["rows"]
         cols = game["cols"]
         for nb in get_neighbors(row, col, rows, cols):
             kb["no_pit"].add(nb)
-
-    # If no stench → all neighbors are wumpus-free
     if not stench:
         rows = game["rows"]
         cols = game["cols"]
         for nb in get_neighbors(row, col, rows, cols):
             kb["no_wumpus"].add(nb)
-
-
-# ─── Resolution refutation: is a cell safe? ───────────────────────────────────
 def ask_safe(cell):
     kb = game["kb"]
     steps = 0
-
-    # Already known safe
     if cell in kb["safe"]:
         steps += 1
         return True, steps
-
-    # Proven no pit AND no wumpus → safe
     if cell in kb["no_pit"] and cell in kb["no_wumpus"]:
         steps += 2
         kb["safe"].add(cell)
         return True, steps
-
-    # CNF-style resolution: check if we can derive "not pit" from clauses
-    # Simple clause list: if any visited neighbor had no-breeze → neighbors not pit
     row, col = cell
     rows = game["rows"]
     cols = game["cols"]
-
     inferred_no_pit = False
     inferred_no_wumpus = False
-
     for nb in get_neighbors(row, col, rows, cols):
         steps += 1
         if nb in kb["visited"]:
@@ -97,17 +74,11 @@ def ask_safe(cell):
                 inferred_no_pit = True
             if nb not in kb["stench_cells"]:
                 inferred_no_wumpus = True
-
-    # Contradiction check: if both inferred safe → resolve as safe
     if inferred_no_pit and inferred_no_wumpus:
         steps += 1
         kb["safe"].add(cell)
         return True, steps
-
     return False, steps
-
-
-# ─── BFS: find path through safe cells to a safe-unvisited cell ───────────────
 def bfs_to_unvisited():
     """
     BFS from current agent position through known-safe cells.
@@ -121,7 +92,7 @@ def bfs_to_unvisited():
     from collections import deque
     visited_bfs = {agent}
     queue = deque()
-    queue.append((agent, []))  # (cell, path_so_far)
+    queue.append((agent, []))  
 
     total_steps = 0
 
@@ -206,12 +177,18 @@ def start():
     rows = max(2, min(rows, 10))
     cols = max(2, min(cols, 10))
 
-    # Place pits randomly (skip (0,0))
-    all_cells = [(r, c) for r in range(rows) for c in range(cols) if (r, c) != (0, 0)]
+    # Starting position and its neighbors are always safe
+    start_pos = (0, 0)
+    forbidden = {start_pos}
+    for r, c in get_neighbors(0, 0, rows, cols):
+        forbidden.add((r, c))
+
+    # Place pits randomly (skip start position and neighbors)
+    all_cells = [(r, c) for r in range(rows) for c in range(cols) if (r, c) not in forbidden]
     num_pits = max(1, (rows * cols) // 5)
     pits = set(map(tuple, random.sample(all_cells, min(num_pits, len(all_cells) - 1))))
 
-    # Place wumpus (not at (0,0), not in pit)
+    # Place wumpus (not at start position/neighbors, not in pit)
     safe_for_wumpus = [c for c in all_cells if c not in pits]
     wumpus = tuple(random.choice(safe_for_wumpus))
 

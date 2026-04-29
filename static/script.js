@@ -143,14 +143,11 @@ function drawGrid(grid, rows, cols) {
     for (var c = 0; c < cols; c++) {
       var cell = grid[r][c];
       var cssClass = getCellClass(cell.type);
-      var icon     = getCellIcon(cell.type);
-      var percepts = buildPerceptTags(cell.percept);
+      var label = getCellLabel(cell.type);
 
-      html += '<td class="' + cssClass + '">';
-      html +=   '<span class="cell-icon">' + icon + '</span>';
-      html +=   '<span class="cell-coords">' + r + ',' + c + '</span>';
-      if (percepts) {
-        html += '<span class="cell-percepts">' + percepts + '</span>';
+      html += '<td class="cell ' + cssClass + '" title="(' + r + ',' + c + ')">';
+      if (label) {
+        html += '<span class="cell-label">' + label + '</span>';
       }
       html += '</td>';
     }
@@ -172,28 +169,15 @@ function getCellClass(type) {
   return map[type] || "cell-unknown";
 }
 
-// ─── Get icon emoji for cell type ──────────────────────────────────
-function getCellIcon(type) {
+// ─── Get a short label for cell type ───────────────────────────────
+function getCellLabel(type) {
   var map = {
-    "agent":   "🤖",
-    "safe":    "✓",
-    "unknown": "?",
-    "danger":  "💀"
+    "agent":   "A",
+    "safe":    "",
+    "unknown": "",
+    "danger":  "!"
   };
-  return map[type] || "?";
-}
-
-// ─── Build percept tag HTML ─────────────────────────────────────────
-function buildPerceptTags(percept) {
-  if (!percept) return "";
-  var html = "";
-  var parts = percept.split(",");
-  for (var i = 0; i < parts.length; i++) {
-    var p = parts[i].trim();
-    if (p === "B") html += '<span class="p-tag pb">B</span>';
-    if (p === "S") html += '<span class="p-tag ps">S</span>';
-  }
-  return html;
+  return map[type] || "";
 }
 
 // ─── Add entry to agent log ─────────────────────────────────────────
