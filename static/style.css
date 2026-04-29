@@ -1,10 +1,8 @@
-/* Simple Two-Color Scheme: Brown & Cream */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
-
 :root {
   --primary: #8B5A3C;
   --cream: #F5F1E8;

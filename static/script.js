@@ -1,17 +1,11 @@
-// ─── Simple state ──────────────────────────────────────────────────
 var gameRunning = false;
-
-// ─── Start game ────────────────────────────────────────────────────
 function startGame() {
   var rows = parseInt(document.getElementById("inp-rows").value) || 5;
   var cols = parseInt(document.getElementById("inp-cols").value) || 5;
-
-  // Basic clamp
   if (rows < 2) rows = 2;
   if (rows > 10) rows = 10;
   if (cols < 2) cols = 2;
   if (cols > 10) cols = 10;
-
   fetch("/start", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -29,11 +23,8 @@ function startGame() {
     addLog("Error starting game. Check server.", "danger");
   });
 }
-
-// ─── Next move ─────────────────────────────────────────────────────
 function nextMove() {
   if (!gameRunning) return;
-
   fetch("/next", {
     method: "POST",
     headers: { "Content-Type": "application/json" }
@@ -41,17 +32,12 @@ function nextMove() {
   .then(function(res) { return res.json(); })
   .then(function(data) {
     updateUI(data);
-
-    // Decide log style
     var status = data.status;
     var cls = "move";
     if (status === "dead")  cls = "danger";
     if (status === "stuck") cls = "warn";
     if (status === "win")   cls = "move";
-
     addLog(data.message, cls);
-
-    // Disable next move if game ended
     if (status !== "running") {
       document.getElementById("btn-next").disabled = true;
       gameRunning = false;
@@ -62,8 +48,6 @@ function nextMove() {
     addLog("Error during move. Check server.", "danger");
   });
 }
-
-// ─── Reset game ─────────────────────────────────────────────────────
 function resetGame() {
   fetch("/reset", {
     method: "POST",
@@ -72,79 +56,53 @@ function resetGame() {
   .then(function() {
     gameRunning = false;
     document.getElementById("btn-next").disabled = true;
-
-    // Clear grid
     var container = document.getElementById("grid-container");
     container.innerHTML =
       '<div class="grid-placeholder"><span class="ph-icon">⊞</span><span>Configure and start the simulation</span></div>';
-
-    // Reset metrics
     document.getElementById("m-pos").textContent     = "—";
     document.getElementById("m-steps").textContent   = "0";
     document.getElementById("m-visited").textContent = "0";
     document.getElementById("m-safe").textContent    = "0";
     document.getElementById("m-percept").textContent = "—";
-
-    // Reset status
     var badge = document.getElementById("status-badge");
     badge.textContent = "IDLE";
     badge.className = "status-badge";
     document.getElementById("status-msg").textContent = "Configure grid and press START.";
-
-    // Clear log
     document.getElementById("log-feed").innerHTML =
       '<div class="log-entry idle">System reset. Ready.</div>';
   })
   .catch(function(err) { console.error("Reset error:", err); });
 }
-
-// ─── Update entire UI from server response ──────────────────────────
 function updateUI(data) {
-  // Draw grid
   drawGrid(data.grid, data.rows, data.cols);
-
-  // Update metrics
   document.getElementById("m-pos").textContent     = "(" + data.agent.row + "," + data.agent.col + ")";
   document.getElementById("m-steps").textContent   = data.inference_steps;
   document.getElementById("m-visited").textContent = data.visited_count;
   document.getElementById("m-safe").textContent    = data.safe_count;
   document.getElementById("m-percept").textContent = data.current_percept.join(", ");
-
-  // Update status badge
   var badge = document.getElementById("status-badge");
   var status = data.status;
   badge.className = "status-badge " + status;
-
   var labels = {
     "running": "RUNNING",
-    "win":     "AGENT WINS 🏆",
-    "dead":    "AGENT DEAD 💀",
-    "stuck":   "STUCK ⚠",
+    "win":     "AGENT WINS",
+    "dead":    "AGENT DEAD",
+    "stuck":   "STUCK",
     "idle":    "IDLE"
   };
   badge.textContent = labels[status] || status.toUpperCase();
   document.getElementById("status-msg").textContent = data.message;
-
-  // Update recent log from server
-  if (data.log && data.log.length > 0) {
-    // We add last server log entry; the manual addLog handles newest
-  }
+  if (data.log && data.log.length > 0) {}
 }
-
-// ─── Draw the grid ──────────────────────────────────────────────────
 function drawGrid(grid, rows, cols) {
   var container = document.getElementById("grid-container");
-
-  // Build table HTML
   var html = '<table class="wumpus-grid"><tbody>';
-
   for (var r = 0; r < rows; r++) {
     html += '<tr>';
     for (var c = 0; c < cols; c++) {
       var cell = grid[r][c];
       var cssClass = getCellClass(cell.type);
       var label = getCellLabel(cell.type);
-
       html += '<td class="cell ' + cssClass + '" title="(' + r + ',' + c + ')">';
       if (label) {
         html += '<span class="cell-label">' + label + '</span>';
@@ -153,12 +111,9 @@ function drawGrid(grid, rows, cols) {
     }
     html += '</tr>';
   }
-
   html += '</tbody></table>';
   container.innerHTML = html;
 }
-
-// ─── Get CSS class for cell type ───────────────────────────────────
 function getCellClass(type) {
   var map = {
     "agent":   "cell-agent",
@@ -168,8 +123,6 @@ function getCellClass(type) {
   };
   return map[type] || "cell-unknown";
 }
-
-// ─── Get a short label for cell type ───────────────────────────────
 function getCellLabel(type) {
   var map = {
     "agent":   "A",
@@ -179,42 +132,27 @@ function getCellLabel(type) {
   };
   return map[type] || "";
 }
-
-// ─── Add entry to agent log ─────────────────────────────────────────
 function addLog(message, type) {
   var feed = document.getElementById("log-feed");
   var div  = document.createElement("div");
   div.className = "log-entry " + (type || "move");
-
-  // Add timestamp
   var now = new Date();
   var ts  = "[" + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":" + pad(now.getSeconds()) + "] ";
   div.textContent = ts + message;
-
   feed.appendChild(div);
-
-  // Keep only last 30 entries
   while (feed.children.length > 30) {
     feed.removeChild(feed.firstChild);
   }
-
-  // Scroll to bottom
   feed.scrollTop = feed.scrollHeight;
 }
-
-// ─── Pad single digit ───────────────────────────────────────────────
 function pad(n) {
   return n < 10 ? "0" + n : "" + n;
 }
-
-// ─── Keyboard shortcut ──────────────────────────────────────────────
 document.addEventListener("keydown", function(e) {
-  // Press Space to trigger next move
   if (e.code === "Space" && gameRunning) {
     e.preventDefault();
     nextMove();
   }
-  // Press Enter to start
   if (e.code === "Enter" && !gameRunning) {
     startGame();
   }
