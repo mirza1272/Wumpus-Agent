@@ -3,7 +3,6 @@ import random
 
 app = Flask(__name__)
 
-# ─── Global game state ────────────────────────────────────────────────────────
 game = {}
 
 def get_neighbors(row, col, rows, cols):
@@ -18,8 +17,6 @@ def get_neighbors(row, col, rows, cols):
         neighbors.append((row, col + 1))
     return neighbors
 
-
-# ─── Build percept for a cell ─────────────────────────────────────────────────
 def compute_percept(row, col):
     rows = game["rows"]
     cols = game["cols"]
