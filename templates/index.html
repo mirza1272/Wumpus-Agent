@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wumpus Logic Agent</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ── Scanline overlay ── -->
+  <div class="scanlines"></div>
+
+  <!-- ── Header ── -->
+  <header class="site-header">
+    <div class="header-glow"></div>
+    <h1 class="logo">
+      <span class="logo-bracket">[</span>
+      WUMPUS
+      <span class="logo-accent">LOGIC</span>
+      AGENT
+      <span class="logo-bracket">]</span>
+    </h1>
+    <p class="subtitle">Knowledge-Based Propositional Reasoning System</p>
+  </header>
+
+  <main class="app-shell">
+
+    <!-- ── LEFT PANEL ── -->
+    <aside class="left-panel">
+
+      <!-- Grid Setup -->
+      <section class="panel-card setup-card">
+        <h2 class="panel-title"><span class="dot"></span> GRID SETUP</h2>
+        <div class="input-row">
+          <label>ROWS</label>
+          <input type="number" id="inp-rows" value="5" min="2" max="10" />
+        </div>
+        <div class="input-row">
+          <label>COLS</label>
+          <input type="number" id="inp-cols" value="5" min="2" max="10" />
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-green" id="btn-start" onclick="startGame()">▶ START GAME</button>
+          <button class="btn btn-blue" id="btn-next" onclick="nextMove()" disabled>⟶ NEXT MOVE</button>
+          <button class="btn btn-red" onclick="resetGame()">↺ RESET</button>
+        </div>
+      </section>
+
+      <!-- Legend -->
+      <section class="panel-card legend-card">
+        <h2 class="panel-title"><span class="dot"></span> LEGEND</h2>
+        <div class="legend-item"><span class="swatch agent"></span> Agent Position</div>
+        <div class="legend-item"><span class="swatch safe"></span> Safe / Visited</div>
+        <div class="legend-item"><span class="swatch unknown"></span> Unknown</div>
+        <div class="legend-item"><span class="swatch danger"></span> Confirmed Danger</div>
+        <div class="legend-item"><span class="tag-b">B</span> Breeze Percept</div>
+        <div class="legend-item"><span class="tag-s">S</span> Stench Percept</div>
+      </section>
+
+      <!-- Status Banner -->
+      <section class="panel-card status-card" id="status-card">
+        <h2 class="panel-title"><span class="dot"></span> STATUS</h2>
+        <div class="status-badge" id="status-badge">IDLE</div>
+        <p class="status-msg" id="status-msg">Configure grid and press START.</p>
+      </section>
+
+    </aside>
+
+    <!-- ── CENTER: GRID ── -->
+    <section class="grid-area">
+      <div class="grid-frame">
+        <div class="grid-container" id="grid-container">
+          <div class="grid-placeholder">
+            <span class="ph-icon">⊞</span>
+            <span>Configure and start the simulation</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── RIGHT PANEL ── -->
+    <aside class="right-panel">
+
+      <!-- Metrics -->
+      <section class="panel-card metrics-card">
+        <h2 class="panel-title"><span class="dot"></span> METRICS</h2>
+        <div class="metric-row">
+          <span class="metric-label">Agent Position</span>
+          <span class="metric-val" id="m-pos">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Inference Steps</span>
+          <span class="metric-val" id="m-steps">0</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Visited Cells</span>
+          <span class="metric-val" id="m-visited">0</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Safe Cells</span>
+          <span class="metric-val" id="m-safe">0</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Current Percepts</span>
+          <span class="metric-val" id="m-percept">—</span>
+        </div>
+      </section>
+
+      <!-- Activity Log -->
+      <section class="panel-card log-card">
+        <h2 class="panel-title"><span class="dot"></span> AGENT LOG</h2>
+        <div class="log-feed" id="log-feed">
+          <div class="log-entry idle">System ready. Awaiting initialization...</div>
+        </div>
+      </section>
+
+      <!-- KB Explainer -->
+      <section class="panel-card kb-card">
+        <h2 class="panel-title"><span class="dot"></span> KB LOGIC</h2>
+        <div class="kb-rule"><span class="kb-sym">∀</span> Breeze → adjacent pit possible</div>
+        <div class="kb-rule"><span class="kb-sym">∀</span> Stench → adjacent Wumpus possible</div>
+        <div class="kb-rule"><span class="kb-sym">¬</span> No breeze → neighbors pit-free</div>
+        <div class="kb-rule"><span class="kb-sym">¬</span> No stench → neighbors Wumpus-free</div>
+        <div class="kb-rule"><span class="kb-sym">⊢</span> Resolution: safe iff ¬pit ∧ ¬Wumpus</div>
+      </section>
+
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    Dynamic Wumpus Logic Agent — Propositional KB + Resolution Refutation
+  </footer>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
