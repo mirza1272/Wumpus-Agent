@@ -1,10 +1,10 @@
-# 🕵️ Wumpus World: Knowledge-Based Logic Agent
+# Wumpus World: Knowledge-Based Logic Agent
 
 A web-based **Dynamic Pathfinding Agent** that uses **Propositional Logic** and **Resolution Refutation** to navigate a hazardous grid. The agent starts with zero knowledge and must deduce safe paths using percepts (Breeze/Stench) collected during exploration.
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 - **Backend**: Python 3 with Flask
 - **Frontend**: HTML5, Vanilla CSS3 (Simple Brown Theme), JavaScript (ES6)
 - **Logic**: Propositional Logic Knowledge Base (CNF)
@@ -12,7 +12,7 @@ A web-based **Dynamic Pathfinding Agent** that uses **Propositional Logic** and 
 
 ---
 
-## 🧠 Core Features
+## Core Features
 
 ### 1. Propositional Logic Engine
 The agent maintains a formal **Knowledge Base (KB)**. When it perceives a Breeze or Stench, it "TELLS" the KB new rules in Conjunctive Normal Form (CNF):
@@ -31,20 +31,20 @@ Before every move, the agent "ASKS" the KB if a neighbor is safe by attempting t
 
 ---
 
-## 🎨 Visualization Legend
+## Visualization Legend
 
 The grid is color-coded based on the agent's current knowledge:
 
 | Color | Status | Description |
 | :--- | :--- | :--- |
-| 🟩 **Green** | **Safe** | Cells that are visited or proven safe via logic. |
-| ⬜ **Gray** | **Unknown** | Unvisited cells with no conclusive evidence yet. |
-| 🟥 **Red** | **Hazard** | Confirmed Pits, the Wumpus, or dangerous territory. |
-| 🟨 **Beige** | **Agent** | The current location of the Agent (marked with **A**). |
+| **Green** | **Safe** | Cells that are visited or proven safe via logic. |
+| **Gray** | **Unknown** | Unvisited cells with no conclusive evidence yet. |
+| **Red** | **Hazard** | Confirmed Pits, the Wumpus, or dangerous territory. |
+| **Beige** | **Agent** | The current location of the Agent (marked with **A**). |
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 wumpus_agent/
@@ -59,7 +59,7 @@ wumpus_agent/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Prerequisites
 Ensure you have Python installed. You will also need Flask:
@@ -79,7 +79,7 @@ python app.py
 
 ---
 
-## 📊 Telemetry Metrics
+## Telemetry Metrics
 - **Coordinates**: Real-time (x, y) position of the agent.
 - **Inference Steps**: Counts every resolution operation performed by the AI.
 - **Exploration %**: Percentage of the safe grid successfully mapped.
@@ -87,5 +87,5 @@ python app.py
 
 ---
 
-## 📜 License
+## License
 This project was developed as an AI Assignment for exploring Knowledge-Based Agents and Propositional Logic.
