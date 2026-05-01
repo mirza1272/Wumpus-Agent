@@ -1,9 +1,7 @@
 let gameRunning = false;
-
 function startGame() {
   const rows = parseInt(document.getElementById("inp-rows").value) || 5;
   const cols = parseInt(document.getElementById("inp-cols").value) || 5;
-
   fetch("/start", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -22,10 +20,8 @@ function startGame() {
       addLog("Error: Could not start game.", "danger");
     });
 }
-
 function nextMove() {
   if (!gameRunning) return;
-
   fetch("/next", {
     method: "POST",
     headers: { "Content-Type": "application/json" }
@@ -43,7 +39,6 @@ function nextMove() {
       addLog("Error during inference.", "danger");
     });
 }
-
 function resetGame() {
   fetch("/reset", { method: "POST" })
     .then(() => {
@@ -56,34 +51,27 @@ function resetGame() {
         <span>Configure and start the simulation</span>
       </div>
     `;
-      // Reset metrics
       document.getElementById("m-pos").textContent = "—";
       document.getElementById("m-steps").textContent = "0";
       document.getElementById("m-visited").textContent = "0";
       document.getElementById("m-safe").textContent = "0";
       document.getElementById("m-percept").textContent = "—";
-
       const badge = document.getElementById("status-badge");
       badge.textContent = "IDLE";
       badge.className = "status-badge";
       document.getElementById("log-feed").innerHTML = '<div class="log-entry">System Reset.</div>';
     });
 }
-
 function updateUI(data) {
   drawGrid(data.grid);
-
   document.getElementById("m-pos").textContent = `(${data.agent.row}, ${data.agent.col})`;
   document.getElementById("m-steps").textContent = data.inference_steps;
   document.getElementById("m-visited").textContent = data.visited_count;
   document.getElementById("m-safe").textContent = data.safe_count;
   document.getElementById("m-percept").textContent = data.percepts.join(", ") || "None";
-
   const badge = document.getElementById("status-badge");
   badge.textContent = data.status.toUpperCase();
   badge.className = `status-badge ${data.status}`;
-
-  // Update log
   const logFeed = document.getElementById("log-feed");
   logFeed.innerHTML = "";
   data.log.forEach(msg => {
@@ -94,23 +82,18 @@ function updateUI(data) {
   });
   logFeed.scrollTop = logFeed.scrollHeight;
 }
-
 function drawGrid(grid) {
   const container = document.getElementById("grid-container");
   container.innerHTML = "";
-
   const table = document.createElement("table");
   table.className = "wumpus-grid";
-
   grid.forEach(row => {
     const tr = document.createElement("tr");
     row.forEach(cell => {
       const td = document.createElement("td");
       td.className = `cell cell-${cell.type}`;
-
       const content = document.createElement("div");
       content.className = "cell-content";
-
       if (cell.type === "agent") {
         content.innerHTML = "<b>A</b>";
       } else if (cell.type === "hazard") {
@@ -118,16 +101,13 @@ function drawGrid(grid) {
       } else if (cell.type === "danger") {
         content.innerHTML = "?";
       }
-
       td.appendChild(content);
       tr.appendChild(td);
     });
     table.appendChild(tr);
   });
-
   container.appendChild(table);
 }
-
 function addLog(msg) {
   const logFeed = document.getElementById("log-feed");
   const entry = document.createElement("div");
@@ -136,8 +116,6 @@ function addLog(msg) {
   logFeed.appendChild(entry);
   logFeed.scrollTop = logFeed.scrollHeight;
 }
-
-// Keyboard shortcuts
 document.addEventListener("keydown", (e) => {
   if (e.code === "Space") {
     e.preventDefault();

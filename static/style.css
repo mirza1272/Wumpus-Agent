@@ -109,7 +109,6 @@ input {
   vertical-align: middle;
   font-size: 20px;
   background-color: #cccccc;
-  /* Default Gray for Unknown/Unvisited */
 }
 
 .cell-agent {
@@ -119,14 +118,12 @@ input {
 .cell-safe,
 .cell-safe_known {
   background-color: #4CAF50;
-  /* Green for Safe */
   color: white;
 }
 
 .cell-hazard,
 .cell-danger {
   background-color: #f44336;
-  /* Red for Confirmed Pits/Wumpus */
   color: white;
 }
 
