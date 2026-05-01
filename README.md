@@ -1,131 +1,91 @@
-# 🕹️ Dynamic Wumpus Logic Agent
+# 🕵️ Wumpus World: Knowledge-Based Logic Agent
 
-A **Knowledge-Based AI Agent** that navigates the Wumpus World using
-**Propositional Logic**, **TELL/ASK inference**, and **Resolution Refutation**.
-
-Built with **Python Flask** (backend) + **Vanilla HTML/CSS/JS** (frontend).
+A web-based **Dynamic Pathfinding Agent** that uses **Propositional Logic** and **Resolution Refutation** to navigate a hazardous grid. The agent starts with zero knowledge and must deduce safe paths using percepts (Breeze/Stench) collected during exploration.
 
 ---
 
-## 📁 Folder Structure
+## 🛠️ Technology Stack
+- **Backend**: Python 3 with Flask
+- **Frontend**: HTML5, Vanilla CSS3 (Simple Brown Theme), JavaScript (ES6)
+- **Logic**: Propositional Logic Knowledge Base (CNF)
+- **Inference**: Automated Resolution Refutation
 
-```
+---
+
+## 🧠 Core Features
+
+### 1. Propositional Logic Engine
+The agent maintains a formal **Knowledge Base (KB)**. When it perceives a Breeze or Stench, it "TELLS" the KB new rules in Conjunctive Normal Form (CNF):
+- `Breeze(x,y) ⇔ Pit(neighbor1) ∨ Pit(neighbor2) ∨ ...`
+- `Stench(x,y) ⇔ Wumpus(neighbor1) ∨ Wumpus(neighbor2) ∨ ...`
+
+### 2. Resolution Refutation
+Before every move, the agent "ASKS" the KB if a neighbor is safe by attempting to find a contradiction:
+- To prove a cell is safe from Pits, it assumes `Pit(x,y)` is true and tries to resolve a contradiction (`empty clause`).
+- **Optimization**: To ensure high performance, the engine uses **Localized Inference**, only considering clauses within a 1-cell radius of the target.
+
+### 3. Smart Pathfinding & Backtracking
+- **Safety First**: The agent will never move into an unknown cell unless it can be proven safe.
+- **Backtracking**: If all neighbors are unknown or dangerous, the agent uses a BFS (Breadth-First Search) through already-visited safe cells to find the nearest unvisited safe territory.
+- **Stuck Detection**: If no provably safe path exists on the entire explored map, the agent triggers a **STUCK** status to avoid taking risks.
+
+---
+
+## 🎨 Visualization Legend
+
+The grid is color-coded based on the agent's current knowledge:
+
+| Color | Status | Description |
+| :--- | :--- | :--- |
+| 🟩 **Green** | **Safe** | Cells that are visited or proven safe via logic. |
+| ⬜ **Gray** | **Unknown** | Unvisited cells with no conclusive evidence yet. |
+| 🟥 **Red** | **Hazard** | Confirmed Pits, the Wumpus, or dangerous territory. |
+| 🟨 **Beige** | **Agent** | The current location of the Agent (marked with **A**). |
+
+---
+
+## 📁 Project Structure
+
+```text
 wumpus_agent/
-├── app.py                  ← Flask server + KB logic + game engine
-├── requirements.txt        ← Python dependencies
+├── app.py              # Flask Server, LogicKB class, and Game Logic
 ├── templates/
-│   └── index.html          ← Main web page
+│   └── index.html      # Simple UI Structure
 ├── static/
-│   ├── style.css           ← All styling (dark terminal theme)
-│   └── script.js           ← Frontend logic (grid draw, API calls)
-└── README.md               ← This file
+│   ├── style.css       # Simple Brown/Red Design System
+│   └── script.js       # Frontend Grid Rendering & API Integration
+└── requirements.txt    # Flask dependency
 ```
 
 ---
 
-## 🚀 How to Run
+## 🚀 Getting Started
 
-### 1. Install Python 3 (if not already installed)
-Download from https://python.org
-
-### 2. Install dependencies
+### 1. Prerequisites
+Ensure you have Python installed. You will also need Flask:
 ```bash
-pip install -r requirements.txt
+pip install flask
 ```
 
-### 3. Run the server
+### 2. Installation
+1. Clone or download this repository.
+2. Navigate to the project folder.
+
+### 3. Run the Application
 ```bash
 python app.py
 ```
-
-### 4. Open in browser
-```
-http://localhost:5000
-```
+4. Open your browser and go to `http://127.0.0.1:5000`.
 
 ---
 
-## 🎮 How to Play
-
-1. Enter grid **Rows** and **Cols** (2–10)
-2. Click **▶ START GAME** — grid generates with random pits + Wumpus
-3. Click **⟶ NEXT MOVE** to step the agent one move at a time
-4. Press **SPACE** as keyboard shortcut for next move
-5. Click **↺ RESET** to start fresh
+## 📊 Telemetry Metrics
+- **Coordinates**: Real-time (x, y) position of the agent.
+- **Inference Steps**: Counts every resolution operation performed by the AI.
+- **Exploration %**: Percentage of the safe grid successfully mapped.
+- **Active Percepts**: Displays "Breeze" or "Stench" felt at the current position.
 
 ---
 
-## 🧠 AI Logic Explained
-
-### Knowledge Base (KB)
-The agent maintains a KB with:
-- `visited` — cells the agent has been to
-- `safe` — cells proven safe
-- `breeze_cells` — cells where breeze was felt
-- `stench_cells` — cells where stench was detected
-- `no_pit` — cells proven pit-free
-- `no_wumpus` — cells proven Wumpus-free
-
-### TELL
-When the agent enters a cell, it **TELLs** the KB:
-- Breeze → some adjacent cell might have a pit
-- No breeze → all adjacent cells are definitely pit-free
-- Stench → some adjacent cell might have a Wumpus
-- No stench → all adjacent cells are definitely Wumpus-free
-
-### ASK (Resolution Refutation)
-Before moving to a neighbor, the agent **ASKs** the KB:
-> "Is this cell safe?"
-
-The resolution steps:
-1. Check if already in `safe` set → trivially true
-2. Check if in both `no_pit` AND `no_wumpus` → directly proven safe
-3. CNF-style resolution: scan all visited neighbors of the candidate cell.
-   If any visited neighbor had **no breeze** → candidate is pit-free.
-   If any visited neighbor had **no stench** → candidate is Wumpus-free.
-   If both inferred → contradiction resolved → cell is SAFE.
-
-Each check increments the **inference steps counter**.
-
-### Grid Colors
-| Color | Meaning |
-|-------|---------|
-| 🔵 Blue | Agent current position |
-| 🟢 Green | Safe / visited cell |
-| ⬛ Gray | Unknown cell |
-| 🔴 Red | Confirmed danger (shown after death/win) |
-
-### Percept Tags
-| Tag | Meaning |
-|-----|---------|
-| **B** | Breeze felt (cyan badge) |
-| **S** | Stench detected (yellow badge) |
-
----
-
-## ⌨️ Keyboard Shortcuts
-
-| Key | Action |
-|-----|--------|
-| `Space` | Next Move (when game running) |
-| `Enter` | Start Game (when idle) |
-
----
-
-## 📊 Metrics Dashboard
-
-| Metric | Description |
-|--------|-------------|
-| Agent Position | Current (row, col) |
-| Inference Steps | Total KB resolution operations |
-| Visited Cells | How many cells explored |
-| Safe Cells | Total cells in KB proven safe |
-| Current Percepts | Breeze / Stench / None at current cell |
-
----
-
-## 🏆 Win / Lose Conditions
-
-- **WIN** — Agent visits all non-hazard cells on the grid
-- **DEAD** — Agent walks into a pit or the Wumpus cell
-- **STUCK** — No safe unvisited neighbor found (agent stops safely)
+## 📜 License
+This project was developed as an AI Assignment for exploring Knowledge-Based Agents and Propositional Logic.

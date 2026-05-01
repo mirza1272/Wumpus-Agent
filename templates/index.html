@@ -1,91 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wumpus Logic Agent</title>
+  <title>Wumpus World Agent</title>
   <link rel="stylesheet" href="/static/style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
 </head>
+
 <body>
-  <div class="page-shell">
-    <header class="site-header">
-      <h1>Dynamic Wumpus Logic Agent</h1>
+  <div class="container">
+    <header>
+      <h1>Wumpus World Agent</h1>
     </header>
-    <main class="app-shell">
-      <aside class="sidebar">
-        <section class="panel-card setup-card">
-          <h2 class="panel-title"><span class="dot"></span> Grid Setup</h2>
-          <div class="input-row">
-            <label for="inp-rows">Rows</label>
-            <input type="number" id="inp-rows" value="5" min="2" max="10" />
+    <div class="main-content">
+      <div class="controls">
+        <div class="card">
+          <h3>Settings</h3>
+          <p>Rows: <input type="number" id="inp-rows" value="5" min="2" max="8" /></p>
+          <p>Cols: <input type="number" id="inp-cols" value="5" min="2" max="8" /></p>
+          <button id="btn-start" onclick="startGame()">Start</button>
+          <button id="btn-next" onclick="nextMove()" disabled>Next</button>
+          <button onclick="resetGame()">Reset</button>
+        </div>
+        <div class="card">
+          <h3>Metrics</h3>
+          <div id="status-badge" class="status-badge">IDLE</div>
+          <p>Pos: <span id="m-pos">—</span></p>
+          <p>Steps: <span id="m-steps">0</span></p>
+          <p>Visited: <span id="m-visited">0</span></p>
+          <p>Safe: <span id="m-safe">0</span></p>
+          <p>Percepts: <span id="m-percept">—</span></p>
+        </div>
+      </div>
+      <div class="view">
+        <div class="card">
+          <h3>Grid View</h3>
+          <div id="grid-container">
+            <p>Start to see grid</p>
           </div>
-          <div class="input-row">
-            <label for="inp-cols">Columns</label>
-            <input type="number" id="inp-cols" value="5" min="2" max="10" />
+        </div>
+        <div class="card">
+          <h3>Logs</h3>
+          <div id="log-feed">
+            <div>Offline</div>
           </div>
-          <div class="btn-group">
-            <button class="btn btn-green" id="btn-start" onclick="startGame()">Start Game</button>
-            <button class="btn btn-blue" id="btn-next" onclick="nextMove()" disabled>Next Move</button>
-            <button class="btn btn-red" onclick="resetGame()">Reset</button>
-          </div>
-        </section>
-        <section class="panel-card status-card" id="status-card">
-          <h2 class="panel-title"><span class="dot"></span> Status</h2>
-          <div class="status-badge" id="status-badge">IDLE</div>
-          <p class="status-msg" id="status-msg">Configure grid and press Start.</p>
-        </section>
-        <section class="panel-card metrics-card">
-          <h2 class="panel-title"><span class="dot"></span> Metrics</h2>
-          <div class="metric-row">
-            <span class="metric-label">Agent Position</span>
-            <span class="metric-val" id="m-pos">—</span>
-          </div>
-          <div class="metric-row">
-            <span class="metric-label">Inference Steps</span>
-            <span class="metric-val" id="m-steps">0</span>
-          </div>
-          <div class="metric-row">
-            <span class="metric-label">Visited Cells</span>
-            <span class="metric-val" id="m-visited">0</span>
-          </div>
-          <div class="metric-row">
-            <span class="metric-label">Safe Cells</span>
-            <span class="metric-val" id="m-safe">0</span>
-          </div>
-          <div class="metric-row">
-            <span class="metric-label">Current Percepts</span>
-            <span class="metric-val" id="m-percept">—</span>
-          </div>
-        </section>
-      </aside>
-      <section class="content-column">
-        <section class="panel-card grid-panel">
-          <div class="panel-head">
-            <h2 class="panel-title"><span class="dot"></span> Grid View</h2>
-            <p class="panel-note">Safe cells are green, unknown cells stay muted, and danger is revealed when confirmed.</p>
-          </div>
-          <div class="grid-frame">
-            <div class="grid-container" id="grid-container">
-              <div class="grid-placeholder">
-                <span class="ph-icon">⌗</span>
-                <span>Configure and start the simulation</span>
-              </div>
-            </div>
-          </div>
-        </section>
-        <section class="panel-card log-card">
-          <h2 class="panel-title"><span class="dot"></span> Activity Log</h2>
-          <div class="log-feed" id="log-feed">
-            <div class="log-entry idle">System ready. Awaiting initialization...</div>
-          </div>
-        </section>
-      </section>
-    </main>
-    <footer class="site-footer">
-      Dynamic Wumpus Logic Agent
-    </footer>
+        </div>
+      </div>
+    </div>
   </div>
   <script src="/static/script.js"></script>
 </body>
+
 </html>
